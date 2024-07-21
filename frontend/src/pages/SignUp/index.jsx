@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
 import { signUp } from "./api";
+import { Input } from "./Input";
 
 export function SignUp() {
   const [username, setUsername] = useState();
@@ -11,9 +12,26 @@ export function SignUp() {
   const [successMessage, setSuccessMessage] = useState();
   const [errors, setErrors] = useState({});
   const [generalError, setGeneralError] = useState();
+
   useEffect(() => {
-    setErrors({});
+    setErrors(function(lastErrors){
+      
+      return {
+        ...lastErrors,
+        username:undefined
+      };
+    });
   }, [username]);
+
+  useEffect(() => {
+    setErrors(function(lastErrors){
+      
+      return {
+        ...lastErrors,
+        email:undefined
+      };
+    });
+  }, [email]);
 
   const onSubmit = async (e) => {
     e.preventDefault(); //enter'a basıldığında form ile beraber sayfanın tekrar yüklenmesini engellemek için kullanılır
@@ -34,7 +52,7 @@ export function SignUp() {
         axiosError.response.data.status === 400
       ) {
         setErrors(axiosError.response.data.validationErrors);
-      } else{
+      } else {
         setGeneralError("Unexpected error occured. Please try again");
       }
     } finally {
@@ -54,63 +72,38 @@ export function SignUp() {
           <div className="text-center card-header">
             <h1>Sign Up</h1>
           </div>
-          <div className="card-body">
-            <div className="mb-3">
-              <label htmlFor="username" className="form-label">
-                Username
-              </label>
-              <input
-                className={
-                  errors.username ? "form-control is-invalid" : "form-control"
-                }
-                type="text"
-                name="username"
-                id="username"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-              <div className="invalid-feedback">{errors.username}</div>
-            </div>
 
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">
-                Email
-              </label>
-              <input
-                className="form-control"
-                type="email"
-                name="email"
-                id="email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="password" className="form-label">
-                Password
-              </label>
-              <input
-                className="form-control"
-                type="password"
-                name="password"
-                id="password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="passwordRepeat" className="form-label">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                className="form-control"
-                name="passwordRepeat"
-                id="passwordRepeat"
-                onChange={(e) => setPasswordRepeat(e.target.value)}
-              />
-            </div>
+          <div className="card-body">
+            <Input
+              id={username}
+              label="Username"
+              error={errors.username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+
+            <Input
+              id={email}
+              label="Email"
+              error={errors.email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+
+            <Input
+              id={password}
+              label="Password"
+              error={errors.password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Input
+              id={passwordRepeat}
+              label="Confirm Password"
+              error={errors.passwordRepeat}
+              onChange={(e) => setPasswordRepeat(e.target.value)}
+            />
             {successMessage && (
               <div className="alert alert-success">{successMessage}</div>
             )}
-             {generalError && (
+            {generalError && (
               <div className="alert alert-danger">{generalError}</div>
             )}
             <div className="text-center">
