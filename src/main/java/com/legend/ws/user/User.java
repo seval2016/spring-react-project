@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
@@ -14,6 +15,7 @@ public class User {
     private long id;
 
     @NotBlank
+    @Size(min=4, max=255)
     private String username;
 
     @NotBlank
