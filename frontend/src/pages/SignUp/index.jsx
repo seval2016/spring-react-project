@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Spinner from "react-bootstrap/Spinner";
 import { signUp } from "./api";
 import { Input } from "./Input";
@@ -75,6 +75,14 @@ export function SignUp() {
       .finally(() => setApiProgress(false));*/
   };
 
+  const passwordRepeatError=useMemo(() => {
+    if (password  && password !== passwordRepeat) {
+      return "Passwords do not match";
+      }
+      return '';
+  },[password , passwordRepeat]);
+
+
   return (
     <div className=" container d-flex align-items-center justify-content-center vh-100">
       <div style={{ width: "30rem" }}>
@@ -108,7 +116,7 @@ export function SignUp() {
             <Input
               id={passwordRepeat}
               label="Confirm Password"
-              error={errors.passwordRepeat}
+              error={passwordRepeatError}
               onChange={(e) => setPasswordRepeat(e.target.value)}
             />
             {successMessage && (
