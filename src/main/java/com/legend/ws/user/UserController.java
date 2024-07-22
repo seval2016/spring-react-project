@@ -8,17 +8,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-//Collectors
+
+import java.util.HashMap;
+import java.util.Map;
+
 import java.util.stream.Collectors;
-
-
 
 import com.legend.ws.error.ApiError;
 import com.legend.ws.shared.GenericMessage;
 
-
 import jakarta.validation.Valid;
-
 
 @RestController
 public class UserController {
@@ -34,25 +33,39 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/api/v1/users")
-   GenericMessage createUser(@Valid @RequestBody User user) {
-     
+    GenericMessage createUser(@Valid @RequestBody User user) {
+
         userService.save(user);
         return new GenericMessage("User is created");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity <ApiError> handleMethodArgNotValidEx(MethodArgumentNotValidException exception){
+    ResponseEntity<ApiError> handleMethodArgNotValidEx(MethodArgumentNotValidException exception) {
         ApiError apiError = new ApiError();
         apiError.setPath("/api/v1/users");
         apiError.setMessage("Validation Error");
         apiError.setStatus(400);
 
         var validationErrors = exception
-        .getBindingResult()
-        .getFieldErrors()
-        .stream()
-        .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+                .getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .collect(Collectors
+                        .toMap(FieldError::getField, FieldError::getDefaultMessage, (existing, replacing) -> existing));
         apiError.setValidationErrors(validationErrors);
         return ResponseEntity.badRequest().body(apiError);
     }
+
+    @ExceptionHandler(NotUniqueEmailException.class)
+    ResponseEntity<ApiError> handleNotUniqueEmailEx(NotUniqueEmailException exception) {
+        ApiError apiError = new ApiError();
+        apiError.setPath("/api/v1/users");
+        apiError.setMessage("Validation Error");
+        apiError.setStatus(400);
+        Map<String, String> validationErrors = new HashMap<>();
+        validationErrors.put("email", "Email in use");
+        apiError.setValidationErrors(validationErrors);
+        return ResponseEntity.badRequest().body(apiError);
+    }
+
 }

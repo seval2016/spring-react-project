@@ -33,6 +33,16 @@ export function SignUp() {
     });
   }, [email]);
 
+  useEffect(() => {
+    setErrors(function(lastErrors){
+      
+      return {
+        ...lastErrors,
+        password:undefined
+      };
+    });
+  }, [password]);
+
   const onSubmit = async (e) => {
     e.preventDefault(); //enter'a basıldığında form ile beraber sayfanın tekrar yüklenmesini engellemek için kullanılır
     setSuccessMessage();
@@ -93,6 +103,7 @@ export function SignUp() {
               label="Password"
               error={errors.password}
               onChange={(e) => setPassword(e.target.value)}
+              type="password"
             />
             <Input
               id={passwordRepeat}
